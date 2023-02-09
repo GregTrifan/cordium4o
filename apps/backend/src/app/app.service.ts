@@ -67,6 +67,7 @@ export class AppService {
     // generate string
     const rChallenge = await crypto.randomBytes(32).toString('hex');
     // store it somewhere temporary ~10 min, check for existance of other challenges with same address
+    // Maybe use https://docs.nestjs.com/techniques/caching for storing these challenges
     const challengeStamp: ChallengeStamp = {
       challenge: rChallenge,
       address,
