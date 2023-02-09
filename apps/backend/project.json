@@ -1,7 +1,7 @@
 {
-  "name": "cordium4o",
+  "name": "backend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/cordium4o/src",
+  "sourceRoot": "apps/backend/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -10,11 +10,11 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/cordium4o",
-        "main": "apps/cordium4o/src/main.ts",
-        "tsConfig": "apps/cordium4o/tsconfig.app.json",
-        "assets": ["apps/cordium4o/src/assets"],
-        "webpackConfig": "apps/cordium4o/webpack.config.js"
+        "outputPath": "dist/apps/backend",
+        "main": "apps/backend/src/main.ts",
+        "tsConfig": "apps/backend/tsconfig.app.json",
+        "assets": ["apps/backend/src/assets"],
+        "webpackConfig": "apps/backend/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -27,11 +27,11 @@
     "serve": {
       "executor": "@nrwl/js:node",
       "options": {
-        "buildTarget": "cordium4o:build"
+        "buildTarget": "backend:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "cordium4o:build:production"
+          "buildTarget": "backend:build:production"
         }
       }
     },
@@ -39,14 +39,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/cordium4o/**/*.ts"]
+        "lintFilePatterns": ["apps/backend/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/cordium4o/jest.config.ts",
+        "jestConfig": "apps/backend/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {
