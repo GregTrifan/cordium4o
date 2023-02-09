@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { credentials, Metadata } from '@grpc/grpc-js';
+import crypto from 'crypto';
 import {
   AccountAddress,
   AccountInfo,
   AttributesKeys,
   ConcordiumNodeClient,
-  getIdProof,
+  IdProofOutput,
+  IdStatement,
   IdStatementBuilder,
 } from '@concordium/node-sdk';
+import { ChallengeStamp } from '../types/ProofingTypes';
 
 @Injectable()
 export class AppService {
@@ -44,7 +47,9 @@ export class AppService {
 
     return nationality;
   }
-  async getStatement(): Promise<IdStatementBuilder> {
+
+  // endpoint for fetching
+  async getStatement(): Promise<IdStatement> {
     const statementBuilder = new IdStatementBuilder();
 
     // Specify that users must be part of the EU
@@ -55,6 +60,30 @@ export class AppService {
 
     // Specify that users should be over 18
     statementBuilder.addMinimumAge(18);
-    return statementBuilder;
+    return statementBuilder.statements;
+  }
+
+  async getChallenge(address: string): Promise<string> {
+    // generate string
+    const rChallenge = await crypto.randomBytes(32).toString('hex');
+    // store it somewhere temporary ~10 min, check for existance of other challenges with same address
+    const challengeStamp: ChallengeStamp = {
+      challenge: rChallenge,
+      address,
+      timeStamp: Date.now(),
+    };
+
+    return challengeStamp.challenge;
+  }
+
+  async provideProof({
+    challenge,
+    proof,
+  }: {
+    challenge: string;
+    proof: IdProofOutput;
+  }): Promise<void> {
+    // generate token or signature here, get rid of challenge if things are valid
+    console.log(challenge, proof);
   }
 }
