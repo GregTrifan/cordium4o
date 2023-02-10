@@ -52,7 +52,7 @@ export class AppService {
       timeStamp: Date.now(),
     };
     // storing the whole thing on the Cache
-    await this.cacheManager.set(rChallenge, challengeStamp);
+    await this.cacheManager.set(rChallenge, challengeStamp,600);
     return challengeStamp.challenge;
   }
 
@@ -63,7 +63,15 @@ export class AppService {
     challenge: string;
     proof: IdProofOutput;
   }): Promise<void> {
-    // generate token or signature here, get rid of challenge if things are valid
+
+
+    const challengeStamp: ChallengeStamp | null = await this.cacheManager.get(challenge);
+
+    if (challengeStamp)
+    {
+      // generate token or signature here, get rid of challenge if things are valid
     console.log(challenge, proof);
+    }
+    throw new Error("Provide proper challenge")
   }
 }
