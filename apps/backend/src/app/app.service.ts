@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import {Cache} from "cache-manager"
 import { credentials, Metadata } from '@grpc/grpc-js';
 import crypto from 'crypto';
 import {
-  AccountAddress,
-  AccountInfo,
   AttributesKeys,
   ConcordiumNodeClient,
   IdProofOutput,
@@ -18,7 +17,7 @@ export class AppService {
   private client: ConcordiumNodeClient;
   private metadata: Metadata = new Metadata();
 
-  constructor() {
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
     this.metadata.add('authentication', 'rpcadmin');
     this.client = new ConcordiumNodeClient(
       'node.testnet.concordium.com',
@@ -27,25 +26,6 @@ export class AppService {
       this.metadata,
       1500
     );
-  }
-
-  async getSampleCountry(): Promise<string> {
-    const accountAddress = new AccountAddress(
-      '48HEZQ7wZU2S1fenyQzt9Ms5K3R4yMHyUtwUqkoREHsFW7zcHb'
-    );
-    const blockHash =
-      '60d3b378379673171dac9ce242db5caece4bc424eff4706b98920a3a3e5c9554';
-    const accountInfo: AccountInfo = await this.client.getAccountInfo(
-      accountAddress,
-      blockHash
-    );
-
-    // Nationality for the account creator, if the information has been revealed.
-    const nationality: string =
-      accountInfo.accountCredentials[0].value.contents.policy
-        .revealedAttributes['nationality'];
-
-    return nationality;
   }
 
   // endpoint for fetching
@@ -66,14 +46,13 @@ export class AppService {
   async getChallenge(address: string): Promise<string> {
     // generate string
     const rChallenge = await crypto.randomBytes(32).toString('hex');
-    // store it somewhere temporary ~10 min, check for existance of other challenges with same address
-    // Maybe use https://docs.nestjs.com/techniques/caching for storing these challenges
     const challengeStamp: ChallengeStamp = {
       challenge: rChallenge,
       address,
       timeStamp: Date.now(),
     };
-
+    // storing the whole thing on the Cache
+    await this.cacheManager.set(rChallenge, challengeStamp);
     return challengeStamp.challenge;
   }
 
