@@ -14,7 +14,6 @@ const Wallet = () => {
   if (walletPresent)
     return (
       <Stack direction="row" borderColor={teal[500]} color={teal[500]} border={1} padding="10px" borderRadius="5px" spacing={2} >
-
         <AccountBalanceWalletIcon />
         <p>{previewAddress}</p>
       </Stack >
